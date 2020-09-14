@@ -1,29 +1,64 @@
 import requests
-import json
 
-endpoint_url = 'https://api.spotify.com/v1/recommendations?'
-access_token = "bsk134kakalkdf245"
+# SETTINGS 
+endpoint_url = "https://api.spotify.com/v1/recommendations?"
+token = "FILL_IN_YOUR_TOKEN"
+user_id = "FILL_IN_YOUR_USER_ID"
 
-#FILTERS
-limit = 10 #number of songs
-market = "AU" #country
-seed_genres = "pop" #genres
-target_danceability = 0.2
-seed_artists = '06HL4z0CvFAxyc27GXpf02?si=_0xxqWK1RMm-QYK6TwApQg'
+# OUR FILTERS
+limit=10
+market="US"
+seed_genres="indie"
+target_danceability=0.9
+uris = [] 
+seed_artists = '0XNa1vTidXlvJ2gHSsRi4A'
+seed_tracks='55SfSsxneljXOk5S3NVZIW'
 
-#QUERY FOR SONGS
-query = f'{endpoint_url}limit={limit}&market={market}&seed_artists={seed_artists}&target_danceability={target_danceability}'
+# PERFORM THE QUERY
+query = f'{endpoint_url}limit={limit}&market={market}&seed_genres={seed_genres}&target_danceability={target_danceability}'
+query += f'&seed_artists={seed_artists}'
+query += f'&seed_tracks={seed_tracks}'
 
-response = requests.get(query,
-               headers={"Content-Type":"application/json",
-                        "Authorization":f"Bearer {access_token}"})
-
+response = requests.get(query, 
+               headers={"Content-Type":"application/json", 
+                        "Authorization":f"Bearer {token}"})
 json_response = response.json()
+
+print('Recommended Songs:')
 for i,j in enumerate(json_response['tracks']):
             uris.append(j['uri'])
             print(f"{i+1}) \"{j['name']}\" by {j['artists'][0]['name']}")
 
-response_genres =requests.get("https://api.spotify.com/v1/recommendations/available-genre-seeds",
-               headers={"Content-Type":"application/json",
-                        "Authorization":f"Bearer {access_token}"})
-print(response_genres.json())
+    
+# CREATE A NEW PLAYLIST
+
+import requests
+import json 
+
+endpoint_url = f"https://api.spotify.com/v1/users/{user_id}/playlists"
+
+request_body = json.dumps({
+          "name": "Indie bands like Franz Ferdinand and Foals but using Python",
+          "description": "My first programmatic playlist, yooo!",
+          "public": False
+        })
+response = requests.post(url = endpoint_url, data = request_body, headers={"Content-Type":"application/json", 
+                        "Authorization":f"Bearer {token}"})
+
+url = response.json()['external_urls']['spotify']
+print(response.status_code)
+# FILL THE NEW PLAYLIST WITH THE RECOMMENDATIONS
+
+playlist_id = response.json()['id']
+
+endpoint_url = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+
+request_body = json.dumps({
+          "uris" : uris
+        })
+response = requests.post(url = endpoint_url, data = request_body, headers={"Content-Type":"application/json", 
+                        "Authorization":f"Bearer {token}"})
+
+print(response.status_code)
+201
+print(f'Your playlist is ready at {url}')
