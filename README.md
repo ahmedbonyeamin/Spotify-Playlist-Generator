@@ -14,7 +14,7 @@ NOTE - PIP
 
 [https://developer.spotify.com/console/get-recommendations/](https://developer.spotify.com/console/get-recommendations/) 
 
-Scroll to the bottom and click '**Get Token Button**' and click '**playlist-modify-private**' as the scope you need. You will also need to sign in to Spotify. (Note this is a short lived token, for serious application there is another process...maybe we will do this in a future session??)
+Scroll to the bottom and click '**Get Token Button**' and click '**playlist-modify-private**' as the scope you need. You will also need to sign in to Spotify. 
 
 ## APIs
 
